@@ -7,6 +7,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:7257", "http://localhost:5257") // Swagger UI's and your React app's URL
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

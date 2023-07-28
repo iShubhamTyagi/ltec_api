@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Configs\credentials.json" />
+    <Content Remove="Configs\ltec-service-account-key.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Configs\credentials.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Configs\ltec-service-account-key.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.61.0.3113" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
