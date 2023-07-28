@@ -39,12 +39,10 @@ public class GoogleSheetsService
     {
         try
         {
-            var body = PrepareData(data);
-            var request = _sheetsService.Spreadsheets.Values.Append(body, _spreadsheetId, _sheet);
-            request.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
-
-            // Make the call async
-            await request.ExecuteAsync();
+            ValueRange body = PrepareData(data);
+        var request = _sheetsService.Spreadsheets.Values.Append(body, _spreadsheetId, _sheet);
+        request.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
+        await request.ExecuteAsync();
         }
         catch (GoogleApiException ex)
         {
@@ -52,7 +50,6 @@ public class GoogleSheetsService
             throw;
         }
     }
-
 
     private static ValueRange PrepareData(PatientData data)
     {
@@ -62,9 +59,15 @@ public class GoogleSheetsService
             data.Age,
             data.Id,
             data.Sex,
-            // Convert your Dictionary to a string as per your needs
-            string.Join(", ", data.Answers),
-            string.Join(", ", data.Verdicts),
+            // Alternate between answers and verdicts
+            string.Join(", ", data.Answers1),
+            data.Verdicts["1"],
+            string.Join(", ", data.Answers2),
+            data.Verdicts["2"],
+            string.Join(", ", data.Answers3),
+            data.Verdicts["3"],
+            string.Join(", ", data.Answers4),
+            data.Verdicts["4"],
             data.OverallVerdict,
             data.Timer.ToString()
         };
@@ -73,4 +76,5 @@ public class GoogleSheetsService
 
         return new ValueRange() { Values = values };
     }
+
 }
