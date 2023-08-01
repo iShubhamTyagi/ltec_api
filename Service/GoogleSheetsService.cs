@@ -5,11 +5,12 @@ using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Ltec.Controllers;
+using LTEC.Interfaces;
 using LTEC.Model;
 
 namespace LTEC.Service;
 
-public class GoogleSheetsService
+public class GoogleSheetsService: IGoogleSheetsService
 {
     private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
     private const string _applicationName = "LTEC";
@@ -17,16 +18,13 @@ public class GoogleSheetsService
     private const string _sheet = "Sheet1";
 
     private readonly SheetsService _sheetsService;
+    private readonly ILogger<GoogleSheetsService> _logger;
+    private const string CredentialFilePath = @"Configs\ltec-service-account-key.json";
 
-    private readonly ILogger<LtecController> _logger;
-    //private object _logger;
-
-    public GoogleSheetsService(ILogger<LtecController> logger)
+    public GoogleSheetsService(ILogger<GoogleSheetsService> logger)
     {
         _logger = logger;
-        var json = File.ReadAllText(@"Configs\ltec-service-account-key.json");
-        var credential = GoogleCredential.FromJson(json)
-            .CreateScoped(Scopes);
+        var credential = GetGoogleCredential(CredentialFilePath);
 
         _sheetsService = new SheetsService(new BaseClientService.Initializer()
         {
@@ -35,14 +33,34 @@ public class GoogleSheetsService
         });
     }
 
+    private GoogleCredential GetGoogleCredential(string filePath)
+    {
+        try
+        {
+            var json = File.ReadAllText(filePath);
+            return GoogleCredential.FromJson(json)
+                .CreateScoped(Scopes);
+        }
+        catch (IOException ex)
+        {
+            _logger.LogError(ex, "An error occurred while reading the service account key.");
+            throw;
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogError(ex, "An error occurred while deserializing the service account key.");
+            throw;
+        }
+    }
+
     public async Task AppendDataToSheetAsync(PatientData data)
     {
         try
         {
             ValueRange body = PrepareData(data);
-        var request = _sheetsService.Spreadsheets.Values.Append(body, _spreadsheetId, _sheet);
-        request.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
-        await request.ExecuteAsync();
+            var request = _sheetsService.Spreadsheets.Values.Append(body, _spreadsheetId, _sheet);
+            request.ValueInputOption = SpreadsheetsResource.ValuesResource.AppendRequest.ValueInputOptionEnum.USERENTERED;
+            await request.ExecuteAsync();
         }
         catch (GoogleApiException ex)
         {
@@ -60,14 +78,7 @@ public class GoogleSheetsService
             data.Id,
             data.Sex,
             // Alternate between answers and verdicts
-            string.Join(", ", data.Answers1),
-            data.Verdicts["1"],
-            string.Join(", ", data.Answers2),
-            data.Verdicts["2"],
-            string.Join(", ", data.Answers3),
-            data.Verdicts["3"],
-            string.Join(", ", data.Answers4),
-            data.Verdicts["4"],
+            PrepareAnswersAndVerdicts(data),
             data.OverallVerdict,
             data.Timer.ToString()
         };
@@ -77,4 +88,13 @@ public class GoogleSheetsService
         return new ValueRange() { Values = values };
     }
 
+    private static IEnumerable<object> PrepareAnswersAndVerdicts(PatientData data)
+    {
+        // Function to concatenate answers and verdicts
+        for (int i = 1; i <= 4; i++)
+        {
+            yield return string.Join(", ", data.Answers[i]);
+            yield return data.Verdicts[i.ToString()];
+        }
+    }
 }
