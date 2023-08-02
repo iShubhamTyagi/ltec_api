@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Text.Json;
 using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Ltec.Controllers;
 using LTEC.Interfaces;
 using LTEC.Model;
 
@@ -90,11 +89,15 @@ public class GoogleSheetsService: IGoogleSheetsService
 
     private static IEnumerable<object> PrepareAnswersAndVerdicts(PatientData data)
     {
-        // Function to concatenate answers and verdicts
         for (int i = 1; i <= 4; i++)
         {
-            yield return string.Join(", ", data.Answers[i]);
-            yield return data.Verdicts[i.ToString()];
+            string key = i.ToString();
+            if (data.Verdicts.ContainsKey(key))
+            {
+                yield return string.Join(", ", data.Answers[key]);
+                yield return data.Verdicts[key];
+            }
         }
     }
+
 }
