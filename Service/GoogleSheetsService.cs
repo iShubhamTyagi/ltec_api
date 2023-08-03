@@ -1,9 +1,11 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Ltec.Controllers;
 using LTEC.Interfaces;
 using LTEC.Model;
 
@@ -17,9 +19,11 @@ public class GoogleSheetsService: IGoogleSheetsService
     private const string _sheet = "Sheet1";
 
     private readonly SheetsService _sheetsService;
-    private readonly ILogger<GoogleSheetsService> _logger;
 
-    public GoogleSheetsService(ILogger<GoogleSheetsService> logger)
+    private readonly ILogger<LtecController> _logger;
+    //private object _logger;
+
+    public GoogleSheetsService(ILogger<LtecController> logger)
     {
         _logger = logger;
         string folderName = "Configs";
@@ -80,7 +84,14 @@ public class GoogleSheetsService: IGoogleSheetsService
             data.Id,
             data.Sex,
             // Alternate between answers and verdicts
-            PrepareAnswersAndVerdicts(data),
+            string.Join(", ", data.Answers1),
+            data.Verdicts["1"],
+            string.Join(", ", data.Answers2),
+            data.Verdicts["2"],
+            string.Join(", ", data.Answers3),
+            data.Verdicts["3"],
+            string.Join(", ", data.Answers4),
+            data.Verdicts["4"],
             data.OverallVerdict,
             data.Timer.ToString()
         };
@@ -88,20 +99,6 @@ public class GoogleSheetsService: IGoogleSheetsService
         IList<IList<object>> values = new List<IList<object>> { rowData };
 
         return new ValueRange() { Values = values };
-    }
-
-    private static IEnumerable<object> PrepareAnswersAndVerdicts(PatientData data)
-    {
-        for (int i = 1; i <= 4; i++)
-        {
-            string index = i.ToString();
-
-            _ = data.Answers.TryGetValue(index, out var answersValue);
-            yield return string.Join(", ", answersValue);
-
-            _ = data.Verdicts.TryGetValue(index, out var verdictsValue);
-            yield return verdictsValue;
-        }
     }
 
 }
