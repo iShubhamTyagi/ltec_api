@@ -18,11 +18,14 @@ public class GoogleSheetsService: IGoogleSheetsService
 
     private readonly SheetsService _sheetsService;
     private readonly ILogger<GoogleSheetsService> _logger;
-    private const string CredentialFilePath = @"Configs\ltec-service-account-key.json";
 
     public GoogleSheetsService(ILogger<GoogleSheetsService> logger)
     {
         _logger = logger;
+        string folderName = "Configs";
+        string fileName = "ltec-service-account-key.json";
+        string CredentialFilePath = Path.Combine(folderName, fileName);
+
         var credential = GetGoogleCredential(CredentialFilePath);
 
         _sheetsService = new SheetsService(new BaseClientService.Initializer()
@@ -72,7 +75,7 @@ public class GoogleSheetsService: IGoogleSheetsService
     {
         IList<object> rowData = new List<object>
         {
-            data.SelectedSequence.ToString(),
+            data.Disease,
             data.Age,
             data.Id,
             data.Sex,
@@ -91,12 +94,13 @@ public class GoogleSheetsService: IGoogleSheetsService
     {
         for (int i = 1; i <= 4; i++)
         {
-            string key = i.ToString();
-            if (data.Verdicts.ContainsKey(key))
-            {
-                yield return string.Join(", ", data.Answers[key]);
-                yield return data.Verdicts[key];
-            }
+            string index = i.ToString();
+
+            _ = data.Answers.TryGetValue(index, out var answersValue);
+            yield return string.Join(", ", answersValue);
+
+            _ = data.Verdicts.TryGetValue(index, out var verdictsValue);
+            yield return verdictsValue;
         }
     }
 

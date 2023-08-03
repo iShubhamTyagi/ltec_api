@@ -2,7 +2,7 @@
 {
     public class PatientData
     {
-        public int SelectedSequence { get; set; }
+        public string Disease { get; set; }
         public string Age { get; set; }
         public string Id { get; set; }
         public string Sex { get; set; }

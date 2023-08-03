@@ -1,3 +1,6 @@
+using LTEC.Interfaces;
+using LTEC.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,7 +21,8 @@ builder.Services.AddCors(options =>
         });
 });
 
-
+builder.Services.AddTransient<IGoogleSheetsService, GoogleSheetsService>();
+builder.Services.AddTransient<IPatientDataService, PatientDataService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
