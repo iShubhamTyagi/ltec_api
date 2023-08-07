@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("OpenCORS",
-        builder => builder.AllowAnyOrigin()
+        builder => builder.WithOrigins("https://ltcheckbharat.netlify.app")
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
