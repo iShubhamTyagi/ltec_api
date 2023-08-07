@@ -22,10 +22,11 @@ builder.Services.AddTransient<IGoogleSheetsService, GoogleSheetsService>();
 builder.Services.AddTransient<IPatientDataService, PatientDataService>();
 var app = builder.Build();
 
+app.UseCors("OpenCORS");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
-    app.UseCors("OpenCORS");
+{ 
     app.UseSwagger();
     app.UseSwaggerUI();
 }
