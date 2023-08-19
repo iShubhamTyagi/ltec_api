@@ -16,7 +16,7 @@ public class GoogleSheetsService: IGoogleSheetsService
     private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
     private const string _applicationName = "LTEC";
     private const string _spreadsheetId = "1aNMQjLL1VpxOlO7QTN-ILFNdkCpPUmvFx6FpxvAP1Bs";
-    private const string _sheet = "Sheet1";
+    private const string _sheet = "Prod";
 
     private readonly SheetsService _sheetsService;
 
@@ -79,6 +79,7 @@ public class GoogleSheetsService: IGoogleSheetsService
     {
         IList<object> rowData = new List<object>
         {
+            data.UserName,
             data.Disease,
             data.Age,
             data.Id,
@@ -93,7 +94,9 @@ public class GoogleSheetsService: IGoogleSheetsService
             string.Join(", ", data.Answers4),
             data.Verdicts["4"],
             data.OverallVerdict,
-            data.Timer.ToString()
+            data.Duration.ToString(),
+            data.Date,
+            data.Time
         };
 
         IList<IList<object>> values = new List<IList<object>> { rowData };
