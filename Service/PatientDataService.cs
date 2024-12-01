@@ -11,9 +11,6 @@ namespace LTEC.Service
             {
                 throw new ArgumentNullException(nameof(data), "PatientData cannot be null.");
             }
-
-            if (data != null)
-            {
                 // Initialize the dictionaries
                 data.Answers1 = new Dictionary<string, string>();
                 data.Answers2 = new Dictionary<string, string>();
@@ -43,8 +40,7 @@ namespace LTEC.Service
                             break;
                     }
                 }
-            }
-
+            
             return data;
         }
     }
