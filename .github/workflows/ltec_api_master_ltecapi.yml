@@ -14,31 +14,34 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "6.0.x"
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Restore NuGet packages
+        run: dotnet restore LTEC.csproj
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Build with dotnet
+        run: dotnet build LTEC.csproj --configuration Release
+
+      - name: Publish with dotnet
+        run: dotnet publish LTEC.csproj --configuration Release --output ./myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./myapp
 
   deploy:
     runs-on: windows-latest
     needs: build
     environment:
       name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
@@ -53,4 +56,4 @@ jobs:
           app-name: "ltecapi"
           slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FC89A33F5FB6410AB9F789D895637404 }}
-          package: .
+          package: ./myapp
