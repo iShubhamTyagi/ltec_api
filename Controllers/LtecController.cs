@@ -28,6 +28,12 @@ namespace Ltec.Controllers
             {
                 var data = JsonConvert.DeserializeObject<PatientData>(json.ToString());
 
+                if (data == null)
+                {
+                    _logger.LogWarning("The deserialized PatientData object is null.");
+                    return BadRequest("Invalid or incomplete data provided.");
+                }       
+
                 data = _patientDataService.DistributeAnswers(data);
 
                 await _googleSheetService.AppendDataToSheetAsync(data);

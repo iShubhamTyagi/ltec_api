@@ -7,6 +7,11 @@ namespace LTEC.Service
     {
         public PatientData DistributeAnswers(PatientData data)
         {
+             if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data), "PatientData cannot be null.");
+            }
+
             if (data != null)
             {
                 // Initialize the dictionaries
@@ -16,7 +21,7 @@ namespace LTEC.Service
                 data.Answers4 = new Dictionary<string, string>();
 
                 // Distribute the answers into the appropriate dictionary
-                foreach (var pair in data.Answers)
+                foreach (var pair in data.Answers ?? new Dictionary<string, string>())
                 {
                     var key = pair.Key;
                     var value = pair.Value;
