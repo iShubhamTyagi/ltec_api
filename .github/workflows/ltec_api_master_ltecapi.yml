@@ -50,7 +50,7 @@ jobs:
           name: ltecapi-artifact
 
       - name: Debug downloaded artifact
-        run: ls -R ./publish
+        run: ls -R . # Debugging step to confirm files exist
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
