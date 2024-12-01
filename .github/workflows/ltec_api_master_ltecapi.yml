@@ -52,11 +52,10 @@ jobs:
       - name: Debug downloaded artifact
         run: ls -R .
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to Azure Web App using Publish Profile
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: "ltecapi"
-          slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           package: .
