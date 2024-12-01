@@ -32,10 +32,10 @@ jobs:
         run: dotnet publish LTEC.csproj --configuration Release --output ./myapp
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Updated to v4
         with:
           name: .net-app
-          path: ./myapp
+          path: ./myapp # Ensure the correct path
 
   deploy:
     runs-on: windows-latest
@@ -45,9 +45,12 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4 # Updated to v4
         with:
           name: .net-app
+
+      - name: Debug downloaded artifact
+        run: ls -R ./myapp # Debugging step to confirm files are downloaded
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
