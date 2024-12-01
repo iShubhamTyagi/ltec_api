@@ -29,13 +29,13 @@ jobs:
         run: dotnet build LTEC.csproj --configuration Release
 
       - name: Publish with dotnet
-        run: dotnet publish LTEC.csproj --configuration Release --output ./myapp
+        run: dotnet publish LTEC.csproj --configuration Release --output ./publish
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4 # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ./myapp # Ensure the correct path
+          name: ltecapi-artifact
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
@@ -45,12 +45,12 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4 # Updated to v4
+        uses: actions/download-artifact@v4
         with:
-          name: .net-app
+          name: ltecapi-artifact
 
       - name: Debug downloaded artifact
-        run: ls -R ./myapp # Debugging step to confirm files are downloaded
+        run: ls -R ./publish
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -59,4 +59,4 @@ jobs:
           app-name: "ltecapi"
           slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FC89A33F5FB6410AB9F789D895637404 }}
-          package: ./myapp
+          package: ./publish
