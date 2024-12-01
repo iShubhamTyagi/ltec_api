@@ -12,7 +12,7 @@
         public Dictionary<string, string> Answers { get; set; } = new Dictionary<string, string>();
         public Dictionary<string, string> Verdicts { get; set; } = new Dictionary<string, string>();
         public string OverallVerdict { get; set; } = string.Empty;
-        public int Duration { get; set; } = 0
+        public int Duration { get; set; } = 0 ;
 
         public string Date { get; set; }  = string.Empty;
         public string Time { get; set; }  = string.Empty;
