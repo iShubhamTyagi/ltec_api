@@ -3,7 +3,7 @@
     public class PatientData
     {
         public string UserName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public string Hospital { get; set; } = string.Empty;
 
         public string Disease { get; set; } = string.Empty;
         public string Age { get; set; } = string.Empty;

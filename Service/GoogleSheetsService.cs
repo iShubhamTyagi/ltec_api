@@ -96,7 +96,8 @@ public class GoogleSheetsService: IGoogleSheetsService
             data.OverallVerdict,
             data.Duration.ToString(),
             data.Date,
-            data.Time
+            data.Time,
+            data.Hospital
         };
 
         IList<IList<object>> values = new List<IList<object>> { rowData };
