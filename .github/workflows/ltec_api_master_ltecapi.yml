@@ -1,5 +1,5 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More GitHub Actions for Azure: https://github.com/Azure/actions Test
 
 name: Build and deploy ASP.Net Core app to Azure Web App - ltecapi
 
@@ -14,43 +14,50 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "6.0.x"
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Restore NuGet packages
+        run: dotnet restore LTEC.csproj
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Build with dotnet
+        run: dotnet build LTEC.csproj --configuration Release
+
+      - name: Publish with dotnet
+        run: dotnet publish LTEC.csproj --configuration Release --output ./publish
+
+      - name: Debug publish directory
+        run: ls -R ./publish
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: ltecapi-artifact
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
     needs: build
     environment:
       name: "Production"
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
+          name: ltecapi-artifact
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Debug downloaded artifact
+        run: ls -R .
+
+      - name: Deploy to Azure Web App using Publish Profile
         uses: azure/webapps-deploy@v2
         with:
           app-name: "ltecapi"
-          slot-name: "Production"
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FC89A33F5FB6410AB9F789D895637404 }}
-          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: "."
